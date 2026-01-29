@@ -1,19 +1,21 @@
 <?php
 
 namespace Bukwid\PHExifTool;
+
+use Bukwid\PHExifTool\Exception\BinaryNotFoundException;
 use RuntimeException;
 
 final class ExifTool
 {
     private string $binary;
 
-    public function __construct(string $binary = 'exiftool')
+    public function __construct(?string $binary = null)
     {
         if(!function_exists('exec')) {
-            throw new RuntimeException('The exec function is disabled. Please enable it to use PHExifTool.');
+            throw new RuntimeException('The exec() function is disabled. Please enable it to use PHExifTool.');
         }
 
-        $this->binary = $binary;
+        $this->binary = BinaryLocator::locate($binary);
     }
 
     public function version(): string
@@ -22,7 +24,7 @@ final class ExifTool
         exec($cmd, $output, $code);
 
         if($code !== 0 || empty($output)) {
-            throw new RuntimeException('Failed to execute exiftool command. Exiftool may not be installed or is not accessible.');
+            throw new RuntimeException('Failed to execute exiftool command.');
         }
 
         return trim($output[0] ?? '');
