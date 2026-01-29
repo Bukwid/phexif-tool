@@ -58,4 +58,38 @@ final class ExifTool
 
         return $data[0];
     }
+
+    /**
+     * Write metadata to a file.
+     * 
+     * @param string $file Path to the file.
+     * @param array $metadata Associative array of metadata to write.
+     * @param bool $overwrite Whether to overwrite the original file (default true).
+    */
+    public function write(string $file, array $tags, bool $overwrite = true): void
+    {
+        if(!file_exists($file) || !is_writable($file)) {
+            throw new RuntimeException("File not found or not writable: $file");
+        }
+
+        if(empty($tags)) {
+            throw new RuntimeException("No metadata tags provided to write.");
+        }
+
+        $args = [];
+
+        foreach($tags as $tag => $value) {
+            $args[] = sprintf('-%s=%s', $tag, escapeshellarg($value));
+        }
+
+        $overwriteFlag = $overwrite ? '-overwrite_original' : '';
+
+        $cmd = escapeshellarg($this->binary) . ' ' . $overwriteFlag . ' ' . implode(' ', $args) . ' ' . escapeshellarg($file);
+
+        exec($cmd, $output, $code);
+
+        if($code !== 0) {
+            throw new RuntimeException('Failed to write metadata to file.');
+        }
+    }
 }
