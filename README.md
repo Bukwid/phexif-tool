@@ -25,7 +25,7 @@ This library acts as a **bridge**. It does not rewrite the ExifTool logic in PHP
 You can install the package via Composer:
 
 ```bash
-composer require bukwid/phexiftool
+composer require bukwid/phexif-tool
 ```
 
 ## 💡 Basic Usage
